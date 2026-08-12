@@ -15,9 +15,21 @@ import pandas as pd  # type: ignore
 from .config import INTERIM_EPA
 from .diccionario_datos import codigo_en, mapear_variable
 
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
+def _configurar_stdout_utf8() -> None:
+    """En consola Windows fuerza UTF-8; en Jupyter/OutStream no tocar stdout."""
+    if sys.platform != "win32":
+        return
+    buffer = getattr(sys.stdout, "buffer", None)
+    if buffer is None:
+        return
+    try:
+        sys.stdout = io.TextIOWrapper(buffer, encoding="utf-8")
+    except (AttributeError, OSError, ValueError):
+        pass
+
+
+_configurar_stdout_utf8()
 
 def cargar_datos(archivo=INTERIM_EPA) -> pd.DataFrame | None:
     """Carga el dataset intermedio consolidado (bloque EPA 2021+)."""

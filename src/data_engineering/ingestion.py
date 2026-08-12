@@ -55,12 +55,16 @@ def _descargar_trimestre(anio: int, trimestre: int) -> Path | None:
         respuesta.raise_for_status()
 
         with zipfile.ZipFile(io.BytesIO(respuesta.content)) as z:
-            archivos = [n for n in z.namelist() if "leeme" not in n.lower()]
+            archivos = [
+                n
+                for n in z.namelist()
+                if n.lower().endswith((".csv", ".tab")) and "leeme" not in n.lower()
+            ]
             if not archivos:
                 return None
             DESCARGAS_DIR.mkdir(parents=True, exist_ok=True)
             z.extractall(DESCARGAS_DIR)
-            return DESCARGAS_DIR / Path(archivos[0]).name
+            return DESCARGAS_DIR / archivos[0]
     except requests.exceptions.RequestException as e:
         print(f"  -> Error descargando {anio}-T{trimestre}: {e}")
     except zipfile.BadZipFile:

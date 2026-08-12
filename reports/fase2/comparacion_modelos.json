@@ -1,0 +1,106 @@
+{
+  "comparacion": {
+    "regresion_logistica": {
+      "roc_auc": 0.8676925258285111,
+      "pr_auc": 0.42172979481265066,
+      "f1": 0.4197421705069939,
+      "balanced_accuracy": 0.7914338914199984,
+      "segundos_entrenamiento": 13.9,
+      "filas_entreno": 300000,
+      "mejores_hiperparametros": {
+        "C": 0.0745934328572655
+      },
+      "pr_auc_cv_busqueda": 0.4665
+    },
+    "random_forest": {
+      "roc_auc": 0.8917928380925755,
+      "pr_auc": 0.46784163853630567,
+      "f1": 0.42456289699430294,
+      "balanced_accuracy": 0.8165363410835165,
+      "segundos_entrenamiento": 2514.0,
+      "filas_entreno": 836021,
+      "mejores_hiperparametros": {
+        "max_depth": 11,
+        "max_features": 0.659195090518222,
+        "min_samples_leaf": 20,
+        "n_estimators": 174
+      },
+      "pr_auc_cv_busqueda": 0.5219
+    },
+    "lightgbm": {
+      "roc_auc": 0.8955164053897541,
+      "pr_auc": 0.4794135983136068,
+      "f1": 0.42185682904768057,
+      "balanced_accuracy": 0.817650565041288,
+      "segundos_entrenamiento": 11.0,
+      "filas_entreno": 836021,
+      "mejores_hiperparametros": {
+        "colsample_bytree": 0.7334834444556088,
+        "learning_rate": 0.016256670876862694,
+        "max_depth": 5,
+        "min_child_samples": 62,
+        "n_estimators": 337,
+        "num_leaves": 44,
+        "subsample": 0.6849356442713105
+      },
+      "pr_auc_cv_busqueda": 0.5254
+    }
+  },
+  "ganador": "lightgbm",
+  "umbral_optimo_f1_train": 0.825,
+  "metricas_test_umbral_05": {
+    "roc_auc": 0.8955164053897541,
+    "pr_auc": 0.4794135983136068,
+    "f1": 0.42185682904768057,
+    "balanced_accuracy": 0.817650565041288,
+    "segundos_entrenamiento": 11.0,
+    "filas_entreno": 836021,
+    "mejores_hiperparametros": {
+      "colsample_bytree": 0.7334834444556088,
+      "learning_rate": 0.016256670876862694,
+      "max_depth": 5,
+      "min_child_samples": 62,
+      "n_estimators": 337,
+      "num_leaves": 44,
+      "subsample": 0.6849356442713105
+    },
+    "pr_auc_cv_busqueda": 0.5254
+  },
+  "metricas_test_umbral_optimo": {
+    "roc_auc": 0.8955164053897541,
+    "pr_auc": 0.4794135983136068,
+    "f1": 0.5157542020212939,
+    "balanced_accuracy": 0.7602327615699618
+  },
+  "tasa_subempleo_global": 0.0759,
+  "columnas_features": [
+    "ANIO_REF",
+    "TRIMESTRE_REF",
+    "CCAA",
+    "PROV",
+    "SEXO",
+    "TRAMO_EDAD",
+    "NIVEL_EDUC",
+    "ESTADO_CIVIL",
+    "NACIONALIDAD",
+    "ROL_HOGAR",
+    "ESTUDIANDO_AHORA",
+    "TAM_HOGAR",
+    "CARGA_FAMILIAR",
+    "VULNERABILIDAD_JOVEN",
+    "TIPO_CONTRATO",
+    "TIPO_JORNADA",
+    "SITUACION_PROF",
+    "SECTOR_ACTIVIDAD",
+    "SEGUNDO_EMPLEO",
+    "HORAS_HABITUALES",
+    "ANTIGUEDAD_MESES",
+    "OCUPACION",
+    "TIPO_ADMINISTRACION",
+    "CONTRATO_PERMANENTE_DISCONTINUO",
+    "TIPO_CONTRATO_TEMPORAL",
+    "PROVINCIA_TRABAJO",
+    "HORAS_EFECTIVAS",
+    "HIZO_HORAS_EXTRA"
+  ]
+}

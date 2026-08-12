@@ -1,0 +1,35 @@
+MODELADO FASE 1 — Ganador Etapa A: random_forest | Ganador Etapa B: lightgbm
+
+=== Etapa A: Activo vs Inactivo ===
+              precision    recall  f1-score   support
+
+    Inactivo       0.57      0.73      0.64     88825
+      Activo       0.90      0.82      0.86    265483
+
+    accuracy                           0.80    354308
+   macro avg       0.74      0.77      0.75    354308
+weighted avg       0.82      0.80      0.80    354308
+
+
+=== Etapa B: Ocupado vs Parado ===
+              precision    recall  f1-score   support
+
+     Ocupado       0.95      0.70      0.80    238460
+      Parado       0.20      0.67      0.31     27023
+
+    accuracy                           0.69    265483
+   macro avg       0.57      0.68      0.56    265483
+weighted avg       0.87      0.69      0.75    265483
+
+
+=== Combinado (3 clases), encadenando A -> B en el test temporal ===
+              precision    recall  f1-score   support
+
+    Inactivo       0.57      0.73      0.64     88825
+     Ocupado       0.88      0.62      0.73    238460
+      Parado       0.15      0.40      0.22     27023
+
+    accuracy                           0.63    354308
+   macro avg       0.53      0.59      0.53    354308
+weighted avg       0.75      0.63      0.67    354308
+

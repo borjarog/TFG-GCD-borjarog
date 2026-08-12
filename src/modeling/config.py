@@ -14,6 +14,10 @@ MODELS_FASE1_DIR = MODELS_DIR / "fase1"
 REPORTS_FASE1_DIR = REPORTS_DIR / "fase1"
 FIGURES_FASE1_DIR = FIGURES_DIR / "fase1"
 
+MODELS_FASE2_DIR = MODELS_DIR / "fase2"
+REPORTS_FASE2_DIR = REPORTS_DIR / "fase2"
+FIGURES_FASE2_DIR = FIGURES_DIR / "fase2"
+
 # Corte temporal train/test: se entrena con todo lo anterior al corte y se
 # evalúa con el corte en adelante (los trimestres más recientes), simulando
 # el uso real del modelo para predecir el futuro a partir del pasado.
@@ -22,12 +26,22 @@ CORTE_TRIMESTRE = 1
 
 # Tamaño de la submuestra estratificada usada SOLO durante la búsqueda de
 # hiperparámetros (RandomizedSearchCV), para que sea viable en tiempo sobre
-# ~1.7M filas. El modelo ganador se reentrena siempre con el train completo.
-TAMANO_MUESTRA_BUSQUEDA = 120_000
-N_ITER_BUSQUEDA = 12
+# ~1.7M filas. Los árboles (RF/LightGBM) se reentrenan con el train completo;
+# la logística se limita a TAMANO_MAX_ENTRENO_LINEAL (lbfgs no escala bien
+# a millones de filas con one-hot).
+TAMANO_MUESTRA_BUSQUEDA = 80_000
+TAMANO_MAX_ENTRENO_LINEAL = 300_000
+N_ITER_BUSQUEDA = 8
 CV_FOLDS = 3
 
-for directorio in (MODELS_FASE1_DIR, REPORTS_FASE1_DIR, FIGURES_FASE1_DIR):
+for directorio in (
+    MODELS_FASE1_DIR,
+    REPORTS_FASE1_DIR,
+    FIGURES_FASE1_DIR,
+    MODELS_FASE2_DIR,
+    REPORTS_FASE2_DIR,
+    FIGURES_FASE2_DIR,
+):
     directorio.mkdir(parents=True, exist_ok=True)
 
 __all__ = [
@@ -37,9 +51,13 @@ __all__ = [
     "MODELS_FASE1_DIR",
     "REPORTS_FASE1_DIR",
     "FIGURES_FASE1_DIR",
+    "MODELS_FASE2_DIR",
+    "REPORTS_FASE2_DIR",
+    "FIGURES_FASE2_DIR",
     "CORTE_ANIO",
     "CORTE_TRIMESTRE",
     "TAMANO_MUESTRA_BUSQUEDA",
+    "TAMANO_MAX_ENTRENO_LINEAL",
     "N_ITER_BUSQUEDA",
     "CV_FOLDS",
 ]

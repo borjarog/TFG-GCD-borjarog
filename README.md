@@ -18,10 +18,13 @@ TFG-GCD-borjarog/
 │   └── diccionario_datos.md      # Diccionario de datos completo (todas las variables y códigos)
 │
 ├── models/                       # Modelos entrenados (.joblib), no versionados en git
-│   └── fase1/
+│   ├── fase1/
+│   └── fase2/
 │
 ├── reports/                      # Métricas, informes y gráficas del modelado
-│   └── figures/fase1/
+│   └── figures/
+│       ├── fase1/
+│       └── fase2/
 │
 ├── src/
 │   ├── data_engineering/         ← INGENIERÍA DE DATOS
@@ -37,8 +40,9 @@ TFG-GCD-borjarog/
 │       ├── preprocessing.py      # Split temporal + preprocesado (nativo LightGBM / one-hot sklearn)
 │       ├── model_specs.py        # Algoritmos candidatos y espacios de búsqueda de hiperparámetros
 │       ├── evaluate.py           # Métricas y gráficas (matriz de confusión, curva PR)
-│       ├── interpretability.py   # SHAP para el modelo ganador
-│       └── fase1.py              # Orquestador: Fase 1 (Ocupado/Parado/Inactivo)
+│       ├── interpretability.py   # SHAP (beeswarm + barras |SHAP|)
+│       ├── fase1.py              # Orquestador Fase 1 (Ocupado/Parado/Inactivo)
+│       └── fase2.py              # Orquestador Fase 2 (subempleo en ocupados)
 │
 ├── notebooks/
 │   ├── ingenieria_datos/         ← Notebooks de datos (a rellenar)
@@ -46,14 +50,15 @@ TFG-GCD-borjarog/
 │
 ├── run_data_pipeline.py          # Entry point: ingesta + validación + feature engineering
 ├── run_model_fase1.py            # Entry point: modelado Fase 1
+├── run_model_fase2.py            # Entry point: modelado Fase 2
 ├── contexto.md                   # Contexto y objetivos del TFG
 └── requirements.txt
 ```
 
 ## Fases del TFG
 
-- **Fase 1 (Macro):** Clasificación Ocupado / Parado / Inactivo, en dos etapas jerárquicas (Activo/Inactivo → Ocupado/Parado). Se comparan Regresión Logística, Random Forest y LightGBM con búsqueda de hiperparámetros, evaluación en un test temporal (trimestres más recientes) e interpretabilidad con SHAP. Reto principal: desbalance de clases.
-- **Fase 2 (Micro):** Subempleo por insuficiencia de horas en ocupados. Interpretabilidad con SHAP. *(Pendiente de reconstruir el modelado, igual que Fase 1.)*
+- **Fase 1 (Macro):** Clasificación Ocupado / Parado / Inactivo, en dos etapas jerárquicas (Activo/Inactivo → Ocupado/Parado), población en edad activa 16–64. Se comparan Regresión Logística, Random Forest y LightGBM con búsqueda de hiperparámetros, evaluación en un test temporal e interpretabilidad con SHAP. Reto principal: desbalance de clases.
+- **Fase 2 (Micro):** Subempleo por insuficiencia de horas (`AOI = 03`) solo en ocupados. Misma comparación de algoritmos + umbral calibrado (F1) + SHAP (factores de riesgo).
 
 ## Puesta en marcha en una máquina nueva (tras `git clone`)
 
@@ -68,6 +73,9 @@ python run_data_pipeline.py
 
 REM 2. Modelado de Fase 1 (tarda: búsqueda de hiperparámetros con 3 algoritmos x 2 etapas)
 python run_model_fase1.py
+
+REM 3. Modelado de Fase 2 (subempleo en ocupados)
+python run_model_fase2.py
 ```
 
 El único dato que SÍ viaja con el repo es `data/meta/diseno_registro_2021_en_adelante.xlsx` (el diseño de registro oficial del INE, pesa poco y es necesario para poder generar el diccionario de datos y parsear ficheros de ancho fijo).
@@ -102,6 +110,19 @@ Artefactos generados:
 - `models/fase1/*.joblib`: modelo ganador de cada etapa (Activo/Inactivo y Ocupado/Parado).
 - `reports/fase1/comparacion_modelos.json` y `informe_final.txt`: métricas de los 3 algoritmos comparados y el informe de clasificación final (3 clases).
 - `reports/figures/fase1/*.png`: matrices de confusión, curvas Precision-Recall y resúmenes SHAP.
+
+## Modelado de Fase 2 (detalle)
+
+```cmd
+python run_model_fase2.py
+```
+
+Sobre `dataset_fase2_micro.parquet` (~1,08M ocupados, ~7,6% subempleo). Criterio de ganador: PR-AUC. Además se calibra un umbral de decisión (máx. F1 en train) y se generan SHAP beeswarm + barras de importancia.
+
+Artefactos:
+- `models/fase2/subempleo_*.joblib` y `umbral_decision.json`
+- `reports/fase2/comparacion_modelos.json` e `informe_final.txt`
+- `reports/figures/fase2/*.png`
 
 ## Configuración del entorno
 

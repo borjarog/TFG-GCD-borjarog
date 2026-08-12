@@ -1,0 +1,96 @@
+{
+  "etapa_a": {
+    "regresion_logistica": {
+      "roc_auc": 0.8354360893239805,
+      "pr_auc": 0.926376136943939,
+      "f1": 0.8527360693374844,
+      "balanced_accuracy": 0.7538731008772366,
+      "segundos_entrenamiento": 4.5,
+      "filas_entreno": 300000,
+      "mejores_hiperparametros": {
+        "C": 4.5705630998014515
+      },
+      "pr_auc_cv_busqueda": 0.9193
+    },
+    "random_forest": {
+      "roc_auc": 0.8574329524427892,
+      "pr_auc": 0.9379761947364063,
+      "f1": 0.8579129096541247,
+      "balanced_accuracy": 0.7747037501437342,
+      "segundos_entrenamiento": 2519.4,
+      "filas_entreno": 1271891,
+      "mejores_hiperparametros": {
+        "max_depth": 17,
+        "max_features": 0.35436386071969245,
+        "min_samples_leaf": 4,
+        "n_estimators": 150
+      },
+      "pr_auc_cv_busqueda": 0.928
+    },
+    "lightgbm": {
+      "roc_auc": 0.853074928408555,
+      "pr_auc": 0.9359383849497188,
+      "f1": 0.8518825293726227,
+      "balanced_accuracy": 0.771446225686023,
+      "segundos_entrenamiento": 13.7,
+      "filas_entreno": 1271891,
+      "mejores_hiperparametros": {
+        "colsample_bytree": 0.7334834444556088,
+        "learning_rate": 0.016256670876862694,
+        "max_depth": 5,
+        "min_child_samples": 62,
+        "n_estimators": 337,
+        "num_leaves": 44,
+        "subsample": 0.6849356442713105
+      },
+      "pr_auc_cv_busqueda": 0.929
+    }
+  },
+  "etapa_b": {
+    "regresion_logistica": {
+      "roc_auc": 0.7336766715437615,
+      "pr_auc": 0.24157750294416405,
+      "f1": 0.3125207986688852,
+      "balanced_accuracy": 0.6645631449589218,
+      "segundos_entrenamiento": 3.6,
+      "filas_entreno": 300000,
+      "mejores_hiperparametros": {
+        "C": 0.0745934328572655
+      },
+      "pr_auc_cv_busqueda": 0.285
+    },
+    "random_forest": {
+      "roc_auc": 0.7386780333888805,
+      "pr_auc": 0.2563569650096663,
+      "f1": 0.2966260098210043,
+      "balanced_accuracy": 0.6776681496888335,
+      "segundos_entrenamiento": 1329.3,
+      "filas_entreno": 936769,
+      "mejores_hiperparametros": {
+        "max_depth": 11,
+        "max_features": 0.659195090518222,
+        "min_samples_leaf": 20,
+        "n_estimators": 174
+      },
+      "pr_auc_cv_busqueda": 0.2866
+    },
+    "lightgbm": {
+      "roc_auc": 0.7470266441313445,
+      "pr_auc": 0.2652024865413095,
+      "f1": 0.30739617756277043,
+      "balanced_accuracy": 0.6822128370963556,
+      "segundos_entrenamiento": 8.7,
+      "filas_entreno": 936769,
+      "mejores_hiperparametros": {
+        "colsample_bytree": 0.7334834444556088,
+        "learning_rate": 0.016256670876862694,
+        "max_depth": 5,
+        "min_child_samples": 62,
+        "n_estimators": 337,
+        "num_leaves": 44,
+        "subsample": 0.6849356442713105
+      },
+      "pr_auc_cv_busqueda": 0.3003
+    }
+  }
+}

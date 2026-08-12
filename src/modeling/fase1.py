@@ -21,6 +21,7 @@ from __future__ import annotations
 import time
 
 import joblib
+from joblib import parallel_backend
 import numpy as np
 import pandas as pd
 from sklearn.base import clone
@@ -38,6 +39,7 @@ from .config import (
     N_ITER_BUSQUEDA,
     RANDOM_STATE,
     REPORTS_FASE1_DIR,
+    TAMANO_MAX_ENTRENO_LINEAL,
     TAMANO_MUESTRA_BUSQUEDA,
 )
 from .evaluate import (
@@ -99,7 +101,13 @@ def _buscar_mejores_hiperparametros(candidato, df_train, y_train, columnas_featu
         n_jobs=-1,
         refit=False,
     )
-    busqueda.fit(X_muestra, y_muestra)
+    # Backend "threading" en vez del "loky" (multiproceso) por defecto: en Windows,
+    # el spawn de procesos de loky se ha quedado colgado de forma reproducible con
+    # este dataset (los workers no avanzan pero el proceso principal sigue vivo).
+    # La mayoría del cómputo de RF/LightGBM libera el GIL, así que threading sigue
+    # paralelizando sin arrastrar el riesgo de deadlock del multiproceso.
+    with parallel_backend("threading"):
+        busqueda.fit(X_muestra, y_muestra)
 
     mejores_params = busqueda.best_params_
     if candidato.familia_preprocesado == "sklearn":
@@ -108,17 +116,36 @@ def _buscar_mejores_hiperparametros(candidato, df_train, y_train, columnas_featu
 
 
 def _entrenar_y_evaluar(candidato, mejores_params, df_train, y_train, df_test, y_test, columnas_features):
-    estimador = clone(candidato.estimador).set_params(**mejores_params)
+    params_finales = dict(mejores_params)
+    # En el fit final, RF/LightGBM usan todos los núcleos; en la búsqueda
+    # se dejan a n_jobs=1 para no pelearse con el paralelismo del CV.
+    if candidato.nombre in {"random_forest", "lightgbm"}:
+        params_finales["n_jobs"] = -1
+
+    df_fit, y_fit = df_train, y_train
+    filas_entreno = len(df_train)
+    if candidato.nombre == "regresion_logistica" and len(df_train) > TAMANO_MAX_ENTRENO_LINEAL:
+        df_fit, y_fit = _submuestra_estratificada(
+            df_train, y_train, TAMANO_MAX_ENTRENO_LINEAL, RANDOM_STATE
+        )
+        filas_entreno = len(df_fit)
+        print(
+            f"  (Logística: reentreno sobre {filas_entreno:,} filas estratificadas "
+            f"en vez de {len(df_train):,} — lbfgs no escala bien a millones.)"
+        )
+
+    estimador = clone(candidato.estimador).set_params(**params_finales)
     modelo = ModeloEnvuelto(candidato.nombre, candidato.familia_preprocesado, estimador, columnas_features)
 
     t0 = time.time()
-    modelo.fit(df_train, y_train)
+    modelo.fit(df_fit, y_fit)
     duracion = time.time() - t0
 
     y_proba = modelo.predict_proba(df_test)
     y_pred = (y_proba >= 0.5).astype(int)
     metricas = metricas_binarias(y_test, y_pred, y_proba)
-    metricas["segundos_entrenamiento_train_completo"] = round(duracion, 1)
+    metricas["segundos_entrenamiento"] = round(duracion, 1)
+    metricas["filas_entreno"] = filas_entreno
     return modelo, y_pred, y_proba, metricas
 
 
@@ -205,7 +232,7 @@ def entrenar_etapa(
 
 def ejecutar_pipeline_fase1() -> dict:
     print("=" * 70)
-    print(" MODELADO FASE 1 — Ocupado / Parado / Inactivo")
+    print(" MODELADO FASE 1 — Ocupado / Parado / Inactivo (edad activa 16-64)")
     print("=" * 70)
     print(f"\nCargando {DATASET_FASE1}...")
     df = pd.read_parquet(DATASET_FASE1)

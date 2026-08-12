@@ -1,5 +1,6 @@
-"""Modelado del mercado laboral EPA: Fase 1 (Ocupado/Parado/Inactivo)."""
+"""Modelado del mercado laboral EPA: Fase 1 (macro) y Fase 2 (subempleo)."""
 
 from .fase1 import ejecutar_pipeline_fase1
+from .fase2 import ejecutar_pipeline_fase2
 
-__all__ = ["ejecutar_pipeline_fase1"]
+__all__ = ["ejecutar_pipeline_fase1", "ejecutar_pipeline_fase2"]

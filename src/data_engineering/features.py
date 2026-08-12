@@ -78,6 +78,10 @@ MAPEO_AOI_MACRO = {
 EDAD1_JOVEN = {"16", "20"}
 NFORMA_BAJA = {"AN", "P1", "P2"}
 
+# Edad activa 16-64 (códigos EDAD1). Se usa solo en Fase 1 para no reducir el
+# problema a "¿está en edad de jubilación?" (EDAD1=65 → 65 o más años).
+EDAD1_EDAD_ACTIVA = {"16", "20", "25", "30", "35", "40", "45", "50", "55", "60"}
+
 
 def filtrar_poblacion_adulta(df: pd.DataFrame) -> pd.DataFrame:
     """NIVEL=1 -> personas de 16 o más años (población de análisis del TFG)."""
@@ -212,6 +216,11 @@ def procesar_fase1_macro(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     de información hacia el target: se excluyen a propósito variables como
     OCUP1, ACT1, SITU, DUCON1, PARCO1, horas trabajadas, BUSCA, MASHOR..., que
     solo existen para quien ya tiene o busca empleo.
+
+    El dataset de modelado se restringe a edad activa 16-64 (códigos EDAD1
+    salvo 65). Así se evita que el modelo se reduzca a detectar jubilación.
+    El DataFrame completo 16+ se sigue devolviendo para alimentar Fase 2
+    (ocupados de 65+ también pueden estar en subempleo).
     """
     print("Procesando Fase 1 (Mercado Macro)...")
 
@@ -219,7 +228,14 @@ def procesar_fase1_macro(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     df_adultos["TARGET_MACRO"] = _mapear_aoi_macro(df_adultos["AOI"])
     df_adultos = df_adultos.dropna(subset=["TARGET_MACRO"])
 
-    df_fase1 = df_adultos[COLUMNAS_FASE1].copy()
+    en_edad_activa = codigo_en(df_adultos["EDAD1"], EDAD1_EDAD_ACTIVA)
+    n_excluidos = int((~en_edad_activa).sum())
+    df_fase1 = df_adultos.loc[en_edad_activa, COLUMNAS_FASE1].copy()
+    print(
+        f"  -> Edad activa 16-64: {len(df_fase1):,} filas "
+        f"(excluidos {n_excluidos:,} con EDAD1=65 / 65+ años)."
+    )
+
     for col in df_fase1.select_dtypes(include=["object"]).columns:
         df_fase1[col] = df_fase1[col].astype("category")
 

@@ -1,0 +1,30 @@
+MODELADO FASE 2 — Subempleo (AOI=03) | Ganador: lightgbm
+Tasa de subempleo (dataset): 7.59%
+Umbral calibrado (máx. F1 en train): 0.825
+
+=== Test @ umbral 0.50 ===
+              precision    recall  f1-score   support
+
+No subempleo       0.98      0.86      0.92    227097
+   Subempleo       0.29      0.78      0.42     16821
+
+    accuracy                           0.85    243918
+   macro avg       0.64      0.82      0.67    243918
+weighted avg       0.93      0.85      0.88    243918
+
+
+=== Test @ umbral 0.825 ===
+              precision    recall  f1-score   support
+
+No subempleo       0.97      0.95      0.96    227097
+   Subempleo       0.47      0.57      0.52     16821
+
+    accuracy                           0.93    243918
+   macro avg       0.72      0.76      0.74    243918
+weighted avg       0.93      0.93      0.93    243918
+
+
+=== Métricas de comparación (PR-AUC es el criterio de ganador) ===
+- regresion_logistica: PR-AUC=0.4217 ROC-AUC=0.8677 F1@0.5=0.4197
+- random_forest: PR-AUC=0.4678 ROC-AUC=0.8918 F1@0.5=0.4246
+- lightgbm: PR-AUC=0.4794 ROC-AUC=0.8955 F1@0.5=0.4219
