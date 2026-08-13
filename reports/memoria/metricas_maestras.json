@@ -1,0 +1,49 @@
+{
+  "titulo": "Tabla maestra de métricas — TFG EPA / ML explicable",
+  "corte_temporal": {"train_hasta": "2024T4", "test_desde": "2025T1"},
+  "volumenes": {
+    "interim": 2627372,
+    "fase1_16_64": 1626199,
+    "fase2_ocupados": 1079939,
+    "tasa_subempleo_pct": 7.59
+  },
+  "fase1": {
+    "etapa_a": {
+      "ganador": "random_forest",
+      "pr_auc": 0.938,
+      "roc_auc": 0.858,
+      "umbral_f1": 0.275,
+      "f1_umbral": 0.896,
+      "baseline_pr_auc": 0.749
+    },
+    "etapa_b": {
+      "ganador": "lightgbm",
+      "pr_auc": 0.273,
+      "roc_auc": 0.753,
+      "umbral_f1": 0.625,
+      "f1_umbral": 0.334,
+      "baseline_pr_auc": 0.102
+    },
+    "combinado_umbrales_calibrados": {
+      "accuracy": 0.72,
+      "f1_inactivo": 0.61,
+      "f1_ocupado": 0.83,
+      "f1_parado": 0.25,
+      "macro_f1_aprox": 0.56
+    }
+  },
+  "fase2": {
+    "ganador": "lightgbm",
+    "pr_auc": 0.479,
+    "roc_auc": 0.896,
+    "umbral_f1": 0.825,
+    "f1_umbral": 0.516,
+    "ablacion": {
+      "baseline_pr_auc": 0.069,
+      "solo_demografia_pr_auc": 0.163,
+      "completo_pr_auc": 0.479,
+      "salto_pr_auc": 0.316
+    }
+  },
+  "tesis": "Demografía explica participación; no basta para el paro; variables del puesto aportan para el subempleo."
+}

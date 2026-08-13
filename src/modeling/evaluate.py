@@ -14,6 +14,7 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics import (
@@ -31,9 +32,36 @@ def metricas_binarias(y_true, y_pred, y_proba) -> dict:
     return {
         "roc_auc": float(roc_auc_score(y_true, y_proba)),
         "pr_auc": float(average_precision_score(y_true, y_proba)),
-        "f1": float(f1_score(y_true, y_pred)),
+        "f1": float(f1_score(y_true, y_pred, zero_division=0)),
         "balanced_accuracy": float(balanced_accuracy_score(y_true, y_pred)),
     }
+
+
+def umbral_optimo_f1(y_true, y_proba) -> float:
+    """Elige el umbral que maximiza F1 de la clase positiva sobre una rejilla."""
+    mejores_f1, mejor_umbral = -1.0, 0.5
+    for umbral in np.linspace(0.05, 0.95, 37):
+        pred = (y_proba >= umbral).astype(int)
+        if pred.sum() == 0:
+            continue
+        score = f1_score(y_true, pred, zero_division=0)
+        if score > mejores_f1:
+            mejores_f1, mejor_umbral = score, float(umbral)
+    return mejor_umbral
+
+
+def metricas_baseline_prevalencia(y_train, y_test) -> dict:
+    """Baseline ingenuo: score constante = prevalencia del positivo en train."""
+    prevalencia = float(np.asarray(y_train).mean())
+    y_proba = np.full(len(y_test), prevalencia, dtype=float)
+    y_pred = (y_proba >= 0.5).astype(int)
+    metricas = metricas_binarias(y_test, y_pred, y_proba)
+    metricas["prevalencia_train"] = prevalencia
+    metricas["segundos_entrenamiento"] = 0.0
+    metricas["filas_entreno"] = int(len(y_train))
+    metricas["mejores_hiperparametros"] = {"strategy": "score_constante_prevalencia"}
+    metricas["pr_auc_cv_busqueda"] = None
+    return metricas
 
 
 def reporte_texto_binario(y_true, y_pred, target_names: list[str]) -> str:

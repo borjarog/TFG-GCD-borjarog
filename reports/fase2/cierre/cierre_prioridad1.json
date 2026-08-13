@@ -1,0 +1,37 @@
+{
+  "ablacion": {
+    "baseline_prevalencia": {
+      "pr_auc": 0.06896170024352447,
+      "roc_auc": 0.5,
+      "f1": 0.0
+    },
+    "solo_demografia": {
+      "pr_auc": 0.1631642755779773,
+      "roc_auc": 0.7138553622997013,
+      "f1": 0.2139488409272582,
+      "f1_umbral_optimo": 0.23539486203615603,
+      "umbral": 0.625,
+      "n_features": 14
+    },
+    "modelo_completo": {
+      "pr_auc": 0.4794135983136068,
+      "roc_auc": 0.8955164053897541,
+      "f1": 0.42185682904768057,
+      "f1_umbral_optimo": 0.5157542020212939,
+      "umbral": 0.825,
+      "n_features": 28
+    }
+  },
+  "errores_resumen_keys": [
+    "TIPO_JORNADA",
+    "SECTOR_ACTIVIDAD",
+    "OCUPACION",
+    "CCAA_NOMBRE"
+  ],
+  "waterfalls": [
+    "shap_waterfall_tp_subempleo.png",
+    "shap_waterfall_tn_no_subempleo.png",
+    "shap_waterfall_fn_subempleo.png"
+  ],
+  "umbral_modelo_completo": 0.825
+}

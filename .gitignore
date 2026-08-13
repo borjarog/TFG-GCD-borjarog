@@ -53,3 +53,11 @@ models/*
 .idea/
 *.swp
 *.swo
+*.code-workspace
+
+# Cursor / chat local (no versionar)
+chat.md
+cursor_*.md
+
+# Scripts de generación puntual (notebooks ya versionados)
+scripts/_generar_*.py

@@ -29,9 +29,11 @@ CORTE_TRIMESTRE = 1
 # ~1.7M filas. Los árboles (RF/LightGBM) se reentrenan con el train completo;
 # la logística se limita a TAMANO_MAX_ENTRENO_LINEAL (lbfgs no escala bien
 # a millones de filas con one-hot).
-TAMANO_MUESTRA_BUSQUEDA = 80_000
+# Búsqueda más amplia que la primera pasada (8 iters / 80k): mejor exploración
+# del espacio HP sin llegar a grid search inabordable sobre ~1M filas.
+TAMANO_MUESTRA_BUSQUEDA = 120_000
 TAMANO_MAX_ENTRENO_LINEAL = 300_000
-N_ITER_BUSQUEDA = 8
+N_ITER_BUSQUEDA = 20
 CV_FOLDS = 3
 
 for directorio in (

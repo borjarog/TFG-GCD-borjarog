@@ -1,0 +1,11 @@
+OCUPACION,n,tasa_real,tasa_pred,pct_fp,pct_fn,accuracy
+Ocupaciones elementales (códigos CNO-2011). Trabajadores no cualificados (códigos CNO-1994),27320,16.06515373352855,22.25475841874085,10.911420204978038,4.721815519765739,84.36676427525623
+"Trabajadores de servicios de restauración, personales, protección y vendedores de comercio (códigos CNO-2011)",50971,9.72317592356438,14.082517509956642,7.5964764277726555,3.237134841380393,89.16638873084696
+"Empleados contables, administrativos y otros empleados de oficina (códigos CNO-2011). Empleados de tipo administrativo (códigos CNO-1994)",24327,5.528836272454474,6.141324454310026,3.8393554486784236,3.2268672668228713,92.9337772844987
+Técnicos y Profesionales de apoyo (códigos CNO-2011),28638,5.17494238424471,5.373978629792584,2.947133179691319,2.7480969341434456,94.30476988616523
+Técnicos y Profesionales científicos e intelectuales (códigos CNO-2011),48873,4.785873590735171,5.244204366419086,2.533095983467354,2.0747652077834386,95.39213880874921
+"Operadores de instalaciones y maquinaria, y montadores (códigos CNO-2011)",19318,4.607102184491149,2.784967387928357,1.558132311833523,3.380267108396314,95.06160057977017
+"Artesanos y trabajadores cualificados de las industrias manufactureras y la construcción (excepto operadores de instalaciones y maquinaria (códigos CNO-2011). Artesanos y trabajadores cualificados de las industrias manufactureras, la construcción, y la minería, excepto operadores de instalaciones y maquinaria (códigos CNO-1994)",26809,4.192621880711702,2.1671826625387,1.1861688239024208,3.2116080420754223,95.60222313402215
+"Trabajadores cualificados en el sector agrícola, ganadero, forestal y pesquero (códigos CNO-2011).Trabajadores cualificados en la agricultura y en la pesca (códigos CNO-1994)",6345,2.3483057525610715,2.111899133175729,1.4499605988967692,1.686367218282112,96.86367218282112
+Ocupaciones militares (códigos CNO-2011). Fuerzas armadas (códigos CNO-1994),1269,1.4184397163120568,0.0,0.0,1.4184397163120568,98.58156028368793
+Directores y gerentes (códigos CNO-2011). Dirección de las empresas y de las  Administraciones Públicas (códigos CNO-1994),10048,1.2838375796178345,0.7762738853503185,0.6170382165605096,1.1246019108280254,98.25835987261146

@@ -1,6 +1,8 @@
 MODELADO FASE 1 — Ganador Etapa A: random_forest | Ganador Etapa B: lightgbm
+Búsqueda HP: n_iter=20, muestra=120000, CV=3
+Umbrales calibrados (máx. F1 en train): A=0.275 | B=0.625
 
-=== Etapa A: Activo vs Inactivo ===
+=== Etapa A: Activo vs Inactivo @0.50 ===
               precision    recall  f1-score   support
 
     Inactivo       0.57      0.73      0.64     88825
@@ -10,26 +12,46 @@ MODELADO FASE 1 — Ganador Etapa A: random_forest | Ganador Etapa B: lightgbm
    macro avg       0.74      0.77      0.75    354308
 weighted avg       0.82      0.80      0.80    354308
 
-
-=== Etapa B: Ocupado vs Parado ===
+=== Etapa A @ umbral 0.275 ===
               precision    recall  f1-score   support
 
-     Ocupado       0.95      0.70      0.80    238460
-      Parado       0.20      0.67      0.31     27023
+    Inactivo       0.76      0.50      0.61     88825
+      Activo       0.85      0.95      0.90    265483
 
-    accuracy                           0.69    265483
-   macro avg       0.57      0.68      0.56    265483
-weighted avg       0.87      0.69      0.75    265483
+    accuracy                           0.84    354308
+   macro avg       0.81      0.73      0.75    354308
+weighted avg       0.83      0.84      0.82    354308
 
 
-=== Combinado (3 clases), encadenando A -> B en el test temporal ===
+=== Etapa B: Ocupado vs Parado @0.50 ===
               precision    recall  f1-score   support
 
-    Inactivo       0.57      0.73      0.64     88825
-     Ocupado       0.88      0.62      0.73    238460
-      Parado       0.15      0.40      0.22     27023
+     Ocupado       0.95      0.71      0.81    238460
+      Parado       0.21      0.66      0.31     27023
 
-    accuracy                           0.63    354308
-   macro avg       0.53      0.59      0.53    354308
-weighted avg       0.75      0.63      0.67    354308
+    accuracy                           0.71    265483
+   macro avg       0.58      0.69      0.56    265483
+weighted avg       0.87      0.71      0.76    265483
+
+=== Etapa B @ umbral 0.625 ===
+              precision    recall  f1-score   support
+
+     Ocupado       0.93      0.87      0.90    238460
+      Parado       0.27      0.44      0.33     27023
+
+    accuracy                           0.82    265483
+   macro avg       0.60      0.65      0.62    265483
+weighted avg       0.86      0.82      0.84    265483
+
+
+=== Combinado (3 clases), A -> B con umbrales calibrados ===
+              precision    recall  f1-score   support
+
+    Inactivo       0.76      0.50      0.61     88825
+     Ocupado       0.81      0.84      0.83    238460
+      Parado       0.19      0.34      0.25     27023
+
+    accuracy                           0.72    354308
+   macro avg       0.59      0.56      0.56    354308
+weighted avg       0.75      0.72      0.73    354308
 

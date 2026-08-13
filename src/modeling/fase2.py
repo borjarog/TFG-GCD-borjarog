@@ -23,7 +23,6 @@ from joblib import parallel_backend
 import numpy as np
 import pandas as pd
 from sklearn.base import clone
-from sklearn.metrics import f1_score
 from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
 
@@ -46,8 +45,9 @@ from .evaluate import (
     guardar_matriz_confusion,
     metricas_binarias,
     reporte_texto_binario,
+    umbral_optimo_f1,
 )
-from .interpretability import graficar_shap_importancia_barras, graficar_shap_summary
+from .interpretability import graficar_shap_completo
 from .model_specs import construir_candidatos
 from .preprocessing import (
     COLUMNAS_EXCLUIDAS_FASE2,
@@ -171,19 +171,6 @@ def _entrenar_y_evaluar(candidato, mejores_params, df_train, y_train, df_test, y
     return modelo, y_pred, y_proba, metricas
 
 
-def _umbral_optimo_f1(y_true, y_proba) -> float:
-    """Elige el umbral que maximiza F1 de la clase positiva sobre una rejilla."""
-    mejores_f1, mejor_umbral = -1.0, 0.5
-    for umbral in np.linspace(0.05, 0.95, 37):
-        pred = (y_proba >= umbral).astype(int)
-        if pred.sum() == 0:
-            continue
-        score = f1_score(y_true, pred, zero_division=0)
-        if score > mejores_f1:
-            mejores_f1, mejor_umbral = score, float(umbral)
-    return mejor_umbral
-
-
 def ejecutar_pipeline_fase2() -> dict:
     print("=" * 70)
     print(" MODELADO FASE 2 — Subempleo por insuficiencia de horas (ocupados)")
@@ -251,7 +238,7 @@ def ejecutar_pipeline_fase2() -> dict:
     # Umbral calibrado en una muestra del TRAIN (no del test) para no sobreajustar el informe.
     print("\nCalibrando umbral de decisión (máx. F1) sobre muestra del train...")
     df_cal, y_cal = _submuestra_estratificada(train_df, y_train, 120_000, RANDOM_STATE)
-    umbral = _umbral_optimo_f1(y_cal, modelo_ganador.predict_proba(df_cal))
+    umbral = umbral_optimo_f1(y_cal, modelo_ganador.predict_proba(df_cal))
     y_pred_opt = (y_proba_ganador >= umbral).astype(int)
     metricas_opt = metricas_binarias(y_test, y_pred_opt, y_proba_ganador)
     print(f"  Umbral óptimo (F1 en train) = {umbral:.3f}")
@@ -290,16 +277,11 @@ def ejecutar_pipeline_fase2() -> dict:
     )
 
     try:
-        graficar_shap_summary(
+        graficar_shap_completo(
             modelo_ganador,
             test_df,
-            f"SHAP beeswarm — Fase 2 ({ganador})",
+            f"Fase 2 ({ganador})",
             FIGURES_FASE2_DIR / "shap_summary.png",
-        )
-        graficar_shap_importancia_barras(
-            modelo_ganador,
-            test_df,
-            f"Importancia media |SHAP| — Fase 2 ({ganador})",
             FIGURES_FASE2_DIR / "shap_importancia_barras.png",
         )
     except Exception as exc:
