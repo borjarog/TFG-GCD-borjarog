@@ -1,13 +1,4 @@
-"""
-EDA visual de la ingeniería de datos EPA (TFG).
-
-Genera figuras en `reports/memoria/eda/` listas para la memoria y un resumen
-en Markdown. Pensado para ejecutarse solo:
-
-    python scripts/generar_eda.py
-
-O desde el notebook `notebooks/ingenieria_datos/01_eda.ipynb`.
-"""
+"""Figuras EDA para la memoria (`reports/memoria/eda/`)."""
 
 from __future__ import annotations
 
@@ -33,9 +24,7 @@ from src.data_engineering.config import (  # noqa: E402
     INTERIM_EPA,
 )
 
-# Paletas con roles separados (evita confundir leyendas):
-# - Semántica laboral: Ocupado / Parado / Inactivo / Subempleo
-# - Meta datasets: Interim / Fase 1 / Fase 2 (NUNCA reutilizar los de arriba)
+# Colores de estado laboral y de dataset van aparte (si no se mezclan en las leyendas).
 COLORES = {
     "fondo": "#f4f6f8",
     "texto": "#1a2332",

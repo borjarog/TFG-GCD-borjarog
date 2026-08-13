@@ -1,4 +1,4 @@
-"""Tests de métricas y umbrales (src.modeling.evaluate)."""
+"""Métricas y umbral F1."""
 
 import numpy as np
 

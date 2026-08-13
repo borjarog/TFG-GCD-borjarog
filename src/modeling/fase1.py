@@ -1,19 +1,7 @@
-"""Modelado de Fase 1: Ocupado / Parado / Inactivo, en dos etapas jerárquicas.
+"""Fase 1: Activo/Inactivo y, sobre activos, Ocupado/Parado.
 
-Etapa A — Activo vs. Inactivo (sobre población 16–64)
-Etapa B — Ocupado vs. Parado (solo dentro de los Activos)
-
-Para cada etapa se comparan 3 algoritmos (+ baseline de prevalencia), cada
-uno con búsqueda aleatoria de hiperparámetros (PR-AUC). El ganador se
-reentrena con el train, se calibra umbral por F1 en train, se evalúa en el
-test temporal y se explica con SHAP (beeswarm + barras |SHAP|).
-
-Al final se encadenan A -> B sobre el test (umbrales calibrados) para la
-evaluación real de Fase 1: Inactivo / Ocupado / Parado.
-
-Uso:
-    python -m src.modeling.fase1
-    python run_model_fase1.py
+Tres modelos por etapa (más un baseline de prevalencia), búsqueda por PR-AUC
+y umbral F1. Al final se encadenan A y B sobre el test.
 """
 
 from __future__ import annotations
@@ -62,7 +50,7 @@ def obtener_columnas_features(df: pd.DataFrame) -> list[str]:
 
 
 def _a_tipo_serializable(valor):
-    """Convierte escalares numpy a tipos nativos de Python para JSON."""
+    """numpy -> int/float para poder meterlo en JSON."""
     if isinstance(valor, np.integer):
         return int(valor)
     if isinstance(valor, np.floating):

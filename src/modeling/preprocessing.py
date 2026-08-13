@@ -1,13 +1,7 @@
-"""Preparación de features y partición temporal para el modelado.
+"""Split temporal y preprocesado (LightGBM nativo vs sklearn).
 
-Filosofía:
-- Split TEMPORAL (no aleatorio): se entrena con el pasado y se evalúa con los
-  trimestres más recientes, que es como se usaría el modelo en producción.
-- Dos familias de preprocesado:
-    - "nativo": para LightGBM (categóricas `dtype=category` + nulos nativos).
-    - "sklearn": para LogisticRegression y RandomForest (imputación + one-hot /
-      escalado).
-- Los nulos estructurales se conservan con un indicador `<col>_ES_NULO`.
+Train = pasado, test = trimestres del corte en adelante. LightGBM se queda
+con categóricas y nulos; logística y RF van con imputación + one-hot.
 """
 
 from __future__ import annotations
@@ -21,14 +15,14 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from .config import CORTE_ANIO, CORTE_TRIMESTRE
 
 # --- Fase 1 -----------------------------------------------------------------
-# Se excluyen CCAA_NOMBRE/PROV_NOMBRE: redundantes respecto a CCAA/PROV.
+# CCAA_NOMBRE / PROV_NOMBRE son el mismo dato que CCAA / PROV.
 COLUMNAS_EXCLUIDAS = {"CCAA_NOMBRE", "PROV_NOMBRE", "TARGET_MACRO"}
 COLUMNAS_NUMERICAS = ["ANIO_REF", "TAM_HOGAR", "ANOS_RESIDENCIA_ESPANA", "EDAD_FIN_ESTUDIOS"]
 COLUMNAS_NUMERICAS_CON_NULO_ESTRUCTURAL = ["ANOS_RESIDENCIA_ESPANA", "EDAD_FIN_ESTUDIOS"]
 
 # --- Fase 2 -----------------------------------------------------------------
-# REGION_TRABAJO ~99.6% nulo (casi todo el trabajo es en España); PROVINCIA_TRABAJO basta.
-# No se incluyen MASHOR/DISMAS/HORDES/... : son la definición del target AOI=03.
+# REGION_TRABAJO está casi siempre vacío (trabajan en España).
+# MASHOR/DISMAS/HORDES no están en el parquet: definen el target AOI=03.
 COLUMNAS_EXCLUIDAS_FASE2 = {
     "CCAA_NOMBRE",
     "PROV_NOMBRE",
@@ -63,7 +57,7 @@ def obtener_columnas_categoricas(
 def split_temporal(
     df: pd.DataFrame, corte_anio: int = CORTE_ANIO, corte_trimestre: int = CORTE_TRIMESTRE
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Divide en train (pasado) / test (futuro) según un corte (año, trimestre) incluido en el test."""
+    """Train antes del corte; el trimestre de corte entra en test."""
     es_test = (df["ANIO_REF"] > corte_anio) | (
         (df["ANIO_REF"] == corte_anio) & (df["TRIMESTRE_REF"] >= corte_trimestre)
     )
@@ -78,7 +72,7 @@ def split_temporal(
 def anadir_indicadores_de_nulo(
     df: pd.DataFrame, columnas_nulo: list[str] | None = None
 ) -> pd.DataFrame:
-    """Añade columnas `<col>_ES_NULO` para numéricas con nulo estructural."""
+    """Flag de nulo estructural (`<col>_ES_NULO`)."""
     df = df.copy()
     for col in columnas_nulo if columnas_nulo is not None else COLUMNAS_NUMERICAS_CON_NULO_ESTRUCTURAL:
         if col in df.columns:
@@ -92,7 +86,7 @@ def preparar_features_nativo(
     columnas_numericas: list[str] | None = None,
     columnas_nulo: list[str] | None = None,
 ) -> pd.DataFrame:
-    """Para LightGBM: mantiene categóricas como `category` y nulos tal cual."""
+    """X para LightGBM: category + nulos sin imputar."""
     columnas_categoricas = obtener_columnas_categoricas(df, columnas_features, columnas_numericas)
     X = anadir_indicadores_de_nulo(df[columnas_features].copy(), columnas_nulo)
     for col in columnas_categoricas:
@@ -106,7 +100,7 @@ def construir_preprocesador_sklearn(
     columnas_numericas: list[str] | None = None,
     columnas_nulo: list[str] | None = None,
 ) -> ColumnTransformer:
-    """Para LogisticRegression/RandomForest: imputación + one-hot / escalado."""
+    """ColumnTransformer: imputación, one-hot y escalado."""
     numericas_base = list(columnas_numericas if columnas_numericas is not None else COLUMNAS_NUMERICAS)
     nulos = list(columnas_nulo if columnas_nulo is not None else COLUMNAS_NUMERICAS_CON_NULO_ESTRUCTURAL)
     columnas_categoricas = obtener_columnas_categoricas(df, columnas_features, numericas_base)
@@ -140,7 +134,7 @@ def preparar_features_sklearn(
     columnas_numericas: list[str] | None = None,
     columnas_nulo: list[str] | None = None,
 ) -> pd.DataFrame:
-    """Prepara el X de entrada para el ColumnTransformer."""
+    """X de entrada al ColumnTransformer de sklearn."""
     columnas_categoricas = obtener_columnas_categoricas(df, columnas_features, columnas_numericas)
     X = anadir_indicadores_de_nulo(df[columnas_features].copy(), columnas_nulo)
     for col in columnas_categoricas:
@@ -149,7 +143,7 @@ def preparar_features_sklearn(
 
 
 class ModeloEnvuelto:
-    """Envuelve un estimador + su preprocesado bajo una interfaz común."""
+    """Estimador + preprocesado con la misma interfaz (fit / predict / SHAP)."""
 
     def __init__(
         self,
@@ -192,7 +186,7 @@ class ModeloEnvuelto:
         return self
 
     def transformar(self, df: pd.DataFrame):
-        """Devuelve la matriz ya lista para entrar al estimador (útil también para SHAP)."""
+        """Matriz lista para el estimador (y para SHAP)."""
         X = self._X(df)
         if self.familia == "sklearn":
             X = self.preprocesador.transform(X)

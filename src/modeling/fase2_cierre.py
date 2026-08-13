@@ -1,14 +1,4 @@
-"""Cierre académico Fase 2 — prioridad 1.
-
-Incluye:
-1. Ablación demografía vs modelo laboral completo (LightGBM)
-2. Baseline de prevalencia
-3. Waterfalls SHAP locales (3 casos)
-4. Análisis de errores por jornada / sector / ocupación / CCAA
-
-Uso:
-    python run_fase2_cierre.py
-"""
+"""Ablación, SHAP local y errores de Fase 2."""
 
 from __future__ import annotations
 
@@ -286,7 +276,7 @@ def ejecutar_cierre_fase2() -> dict:
     REPORTS_CIERRE.mkdir(parents=True, exist_ok=True)
 
     print("=" * 70)
-    print(" FASE 2 — CIERRE PRIORIDAD 1 (ablación, XAI local, errores, baseline)")
+    print(" FASE 2 — ablación, SHAP local y errores")
     print("=" * 70)
 
     df = pd.read_parquet(DATASET_FASE2)
@@ -400,7 +390,7 @@ def ejecutar_cierre_fase2() -> dict:
     }
     guardar_json(payload, REPORTS_CIERRE / "cierre_prioridad1.json")
     print(f"\nResumen: {REPORTS_CIERRE / 'resumen_cierre.md'}")
-    print("Cierre prioridad 1 completado.")
+    print("Cierre Fase 2 terminado.")
     return payload
 
 

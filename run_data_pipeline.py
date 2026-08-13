@@ -1,10 +1,4 @@
-"""
-Punto de entrada del pipeline de ingeniería de datos.
-
-Uso:
-    python run_data_pipeline.py
-    python run_data_pipeline.py --skip-ingestion   # si ya tienes el parquet intermedio
-"""
+"""Ingesta + validación + features. `--skip-ingestion` si ya está el parquet."""
 
 from src.data_engineering.pipeline import run_full_pipeline
 
@@ -15,7 +9,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--skip-ingestion",
         action="store_true",
-        help="Omitir ingesta y usar el parquet intermedio existente",
+        help="Saltar ingesta y usar el parquet intermedio que ya hay",
     )
     args = parser.parse_args()
 

@@ -1,8 +1,4 @@
-"""Continúa Fase 1 desde la Etapa B (usa el modelo A ya guardado).
-
-Uso:
-    python run_model_fase1_etapa_b.py
-"""
+"""Solo Etapa B de Fase 1 (hace falta tener la A guardada)."""
 
 from src.modeling.fase1 import ejecutar_pipeline_fase1_solo_b
 

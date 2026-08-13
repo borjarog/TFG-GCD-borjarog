@@ -1,8 +1,4 @@
-"""Pipeline de ingeniería de datos EPA.
-
-Import ligero: no arrastra ingestion/validation/features al importar el paquete
-(p. ej. `from src.data_engineering.config import ...` desde notebooks).
-"""
+"""Ingeniería de datos EPA. El import del paquete no carga ingestion/features."""
 
 from __future__ import annotations
 

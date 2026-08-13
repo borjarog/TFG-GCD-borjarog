@@ -1,4 +1,4 @@
-"""Tests de split temporal y preparación de features."""
+"""Split temporal y preparación de X."""
 
 import pandas as pd
 

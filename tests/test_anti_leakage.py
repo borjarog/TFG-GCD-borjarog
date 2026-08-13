@@ -1,4 +1,4 @@
-"""Tests anti-fuga: variables del target no deben ser predictoras."""
+"""Comprobar que el target no se cuela en las predictoras."""
 
 import pandas as pd
 
@@ -6,7 +6,7 @@ from src.data_engineering.features import COLUMNAS_FASE2
 from src.modeling.fase1 import obtener_columnas_features as columnas_fase1
 from src.modeling.fase2 import obtener_columnas_features as columnas_fase2
 
-# Definición directa del AOI=03; excluidas en features.py (no llegan al parquet Fase 2).
+# AOI=03 se define con estas; no están en el parquet de Fase 2.
 VARIABLES_FUGA_AOI = {"MASHOR", "DISMAS", "RZNDISH", "HORDES", "BUSOTR", "AOI"}
 
 

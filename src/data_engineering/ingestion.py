@@ -1,14 +1,4 @@
-"""
-Ingesta de microdatos EPA (INE), bloque metodológico 2021 en adelante.
-
-Lee los ficheros trimestrales ya descargados en `data/raw/CSV/` (texto
-delimitado por tabulador) y, si falta algún trimestre, intenta descargarlo
-directamente del INE como fallback (útil para trimestres futuros que aún no
-estén en el repositorio local).
-
-Uso:
-    python -m src.data_engineering.ingestion
-"""
+"""Lee los microdatos EPA (2021+). Si falta un trimestre, lo baja del INE."""
 
 from __future__ import annotations
 
@@ -45,7 +35,7 @@ def _leer_ancho_fijo(ruta: Path) -> pd.DataFrame:
 
 
 def _descargar_trimestre(anio: int, trimestre: int) -> Path | None:
-    """Descarga y extrae el ZIP de microdatos del INE para un trimestre que no esté en local."""
+    """ZIP de microdatos del INE cuando el trimestre no está en local."""
     anio_str = str(anio)[-2:]
     url = URL_TEMPLATE.format(anio=anio_str, trimestre=trimestre)
     print(f"  -> Sin archivo local, descargando desde el INE: {url}")

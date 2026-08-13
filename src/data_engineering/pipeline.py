@@ -11,12 +11,7 @@ def run_full_pipeline(
     anio_fin: int = ANIO_FIN,
     skip_ingestion: bool = False,
 ):
-    """
-    Ejecuta el pipeline completo de ingeniería de datos:
-    1. Ingesta (lectura local + descarga de trimestres que falten)
-    2. Validación (sanity checks)
-    3. Feature engineering (datasets Fase 1 y Fase 2)
-    """
+    """Ingesta, validación y feature engineering."""
     print("\n" + "=" * 60)
     print(" PIPELINE DE INGENIERÍA DE DATOS — EPA")
     print("=" * 60)

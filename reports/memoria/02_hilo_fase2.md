@@ -212,4 +212,4 @@ Con ~7,6 % de positivos, un clasificador trivial “todo no-subempleo” alcanza
 | Entrada cierre | `run_fase2_cierre.py` |
 | Hilo global TFG | `reports/memoria/01_hilo_cientifico.md` |
 
-*Documento de cierre narrativo Fase 2 (pack “més dolç”, punto 1 aplicado a Fase 2).*
+*Notas de Fase 2 para la memoria.*

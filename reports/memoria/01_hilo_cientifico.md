@@ -4,7 +4,7 @@
 **Fuente:** microdatos EPA (INE), 2021T1–2026T1  
 **Evaluación:** split temporal — train ≤ 2024T4 · test ≥ 2025T1  
 
-Este documento concentra el **relato científico** del trabajo (listo para pegar/adaptar en la memoria), la **tabla maestra de métricas** y las **limitaciones**. No sustituye a los informes técnicos de `reports/fase1/` y `reports/fase2/`; los sintetiza.
+Este documento concentra el relato científico del trabajo, la tabla de métricas y las limitaciones. Los informes detallados están en `reports/fase1/` y `reports/fase2/`.
 
 ---
 
@@ -200,4 +200,4 @@ Sugerencia de mapeo a capítulos:
 | Ablación, errores, waterfalls | `reports/fase2/cierre/` · `reports/figures/fase2/cierre/` |
 | Notebooks | `notebooks/ingenieria_datos/01_eda.ipynb` · `notebooks/modelado/02_resultados_fase2.ipynb` |
 
-*Documento generado para el cierre narrativo del TFG (punto 1 del pack “més dolç”). Cifras alineadas con los informes de reentrenamiento Fase 1 (ago. 2026) y modelado/cierre Fase 2.*
+*Cifras de los informes de Fase 1 (ago. 2026) y Fase 2.*

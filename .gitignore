@@ -23,8 +23,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Jupyter Notebook
+# Jupyter / pytest
 .ipynb_checkpoints
+.pytest_cache/
 
 # Environments
 .env
@@ -61,3 +62,4 @@ cursor_*.md
 
 # Scripts de generación puntual (notebooks ya versionados)
 scripts/_generar_*.py
+Ideas_TFG_EPA_INE.docx

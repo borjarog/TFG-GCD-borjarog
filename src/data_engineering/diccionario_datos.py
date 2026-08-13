@@ -1,19 +1,4 @@
-"""
-Diccionario de datos de la EPA (INE).
-
-Genera un Markdown legible con TODAS las variables del diseño de registro
-oficial de la EPA (bloque metodológico 2021 en adelante, población de 16
-y más años), incluyendo para cada una su posición/longitud en el fichero
-de ancho fijo y, si es categórica, todos sus códigos oficiales con su
-significado.
-
-La fuente de verdad es siempre el Excel del INE
-(`data/meta/diseno_registro_2021_en_adelante.xlsx`): si el INE actualiza el
-diseño de registro, basta con volver a ejecutar este script.
-
-Uso:
-    python -m src.data_engineering.diccionario_datos
-"""
+"""Diccionario de variables EPA a partir del Excel de diseño de registro del INE."""
 
 from __future__ import annotations
 

@@ -15,7 +15,7 @@ import shap
 from .config import RANDOM_STATE
 from .preprocessing import ModeloEnvuelto
 
-# RF one-hot + muchos árboles: 3000 muestras × 2 pasadas era inabordable.
+# RF con one-hot y muchos árboles se iba de tiempo con 3000 filas.
 TAMANO_MUESTRA_SHAP = 1_500
 TAMANO_MUESTRA_SHAP_RF = 600
 
@@ -55,7 +55,7 @@ def _preparar_matriz_shap(modelo: ModeloEnvuelto, df_test: pd.DataFrame):
 
 
 def graficar_shap_summary(modelo: ModeloEnvuelto, df_test: pd.DataFrame, titulo: str, ruta_salida: Path) -> None:
-    """Summary beeswarm de SHAP sobre una muestra del test."""
+    """Beeswarm SHAP (muestra del test)."""
     valores_shap, X, nombres = _preparar_matriz_shap(modelo, df_test)
 
     fig = plt.figure(figsize=(8, 6))
@@ -75,7 +75,7 @@ def graficar_shap_importancia_barras(
     valores_shap=None,
     nombres=None,
 ) -> None:
-    """Importancia media |SHAP|. Si se pasan valores ya calculados, no recomputa."""
+    """Barras de |SHAP| medio. Si ya hay valores, no los vuelve a calcular."""
     if valores_shap is None or nombres is None:
         valores_shap, _, nombres = _preparar_matriz_shap(modelo, df_test)
     importancia = pd.Series(np.abs(valores_shap).mean(axis=0), index=nombres)
@@ -98,7 +98,7 @@ def graficar_shap_completo(
     ruta_barras: Path,
     top_n: int = 20,
 ) -> None:
-    """Beeswarm + barras con un único cálculo SHAP (evita duplicar horas en RF)."""
+    """Beeswarm y barras con un solo cálculo SHAP."""
     valores_shap, X, nombres = _preparar_matriz_shap(modelo, df_test)
 
     fig = plt.figure(figsize=(8, 6))
@@ -130,7 +130,7 @@ def graficar_shap_waterfalls(
     dir_salida: Path,
     max_display: int = 12,
 ) -> list[Path]:
-    """Genera 3 waterfalls: TP subempleo, TN no-subempleo, y un error (FP o FN)."""
+    """Tres waterfalls: un TP, un TN y un fallo (FN si hay, si no FP)."""
     dir_salida.mkdir(parents=True, exist_ok=True)
     y_true_arr = np.asarray(y_true).astype(int)
     y_pred = (y_proba >= umbral).astype(int)
@@ -164,7 +164,7 @@ def graficar_shap_waterfalls(
         casos.append(("fp_subempleo", "Caso FP — falso subempleo", idx_fp))
 
     rutas: list[Path] = []
-    # Fondo pequeño para TreeExplainer (nativo LightGBM no lo necesita, pero ayuda estabilidad)
+    # Muestra de fondo para el explainer
     fondo = df_test.sample(n=min(200, len(df_test)), random_state=RANDOM_STATE)
     X_fondo = modelo.transformar(fondo)
     explicador = _explicador_para(modelo, X_fondo)
@@ -193,7 +193,7 @@ def graficar_shap_waterfalls(
         expected = float(expected)
 
         nombres = modelo.nombres_features()
-        # Datos de display: para nativo usar la fila de features; para sklearn, valores numéricos
+        # LightGBM: valores de la fila. Sklearn: el vector ya transformado.
         if modelo.familia == "nativo":
             data_row = X.iloc[0] if hasattr(X, "iloc") else X[0]
             if hasattr(X, "iloc"):

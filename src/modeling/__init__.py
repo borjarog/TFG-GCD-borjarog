@@ -1,4 +1,4 @@
-"""Modelado del mercado laboral EPA: Fase 1 (macro) y Fase 2 (subempleo)."""
+"""Modelado Fase 1 y Fase 2."""
 
 from .fase1 import ejecutar_pipeline_fase1
 from .fase2 import ejecutar_pipeline_fase2

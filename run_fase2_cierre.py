@@ -1,9 +1,4 @@
-"""
-Cierre académico Fase 2 (prioridad 1): ablación, waterfalls, errores, baseline.
-
-Uso:
-    python run_fase2_cierre.py
-"""
+"""Ablación, waterfalls SHAP y análisis de errores de Fase 2."""
 
 from src.modeling.fase2_cierre import ejecutar_cierre_fase2
 

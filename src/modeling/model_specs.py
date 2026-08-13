@@ -1,11 +1,4 @@
-"""Catálogo de algoritmos a comparar para Fase 1 y sus espacios de búsqueda de hiperparámetros.
-
-Se comparan tres familias con lógicas de generalización muy distintas:
-- Regresión Logística: baseline lineal, rápida e interpretable por coeficientes.
-- Random Forest: ensemble de árboles por bagging, robusto a outliers/escala.
-- LightGBM: gradient boosting, suele ser el más preciso en datos tabulares
-  y soporta categóricas nativas + valores nulos sin preprocesado.
-"""
+"""Candidatos (logística, RF, LightGBM) y rangos de hiperparámetros."""
 
 from __future__ import annotations
 
@@ -29,8 +22,7 @@ class ModeloCandidato:
 
 def construir_candidatos(random_state: int) -> list[ModeloCandidato]:
     return [
-        # lbfgs + L2: baseline lineal rápido. Evitamos saga (L1/L2) porque
-        # sobre ~1M+ filas con one-hot se queda horas en un solo núcleo.
+# lbfgs + L2. saga (L1) se eternizaba con one-hot sobre ~1M filas.
         ModeloCandidato(
             nombre="regresion_logistica",
             familia_preprocesado="sklearn",

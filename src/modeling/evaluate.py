@@ -1,9 +1,7 @@
-"""Métricas y gráficas de evaluación para los modelos de Fase 1.
+"""Métricas y figuras de evaluación.
 
-Con clases desbalanceadas la accuracy es engañosa, así que el criterio
-principal para elegir el mejor modelo de cada etapa es el PR-AUC (average
-precision) de la clase minoritaria, complementado con ROC-AUC, F1 y
-balanced accuracy para tener una foto completa.
+Con desbalance la accuracy engaña; el criterio de selección es PR-AUC.
+También se reportan ROC-AUC, F1 y balanced accuracy.
 """
 
 from __future__ import annotations
@@ -38,7 +36,7 @@ def metricas_binarias(y_true, y_pred, y_proba) -> dict:
 
 
 def umbral_optimo_f1(y_true, y_proba) -> float:
-    """Elige el umbral que maximiza F1 de la clase positiva sobre una rejilla."""
+    """Umbral de la rejilla que maximiza F1 de la clase positiva."""
     mejores_f1, mejor_umbral = -1.0, 0.5
     for umbral in np.linspace(0.05, 0.95, 37):
         pred = (y_proba >= umbral).astype(int)
@@ -51,7 +49,7 @@ def umbral_optimo_f1(y_true, y_proba) -> float:
 
 
 def metricas_baseline_prevalencia(y_train, y_test) -> dict:
-    """Baseline ingenuo: score constante = prevalencia del positivo en train."""
+    """Baseline: todos los casos con la prevalencia del positivo en train."""
     prevalencia = float(np.asarray(y_train).mean())
     y_proba = np.full(len(y_test), prevalencia, dtype=float)
     y_pred = (y_proba >= 0.5).astype(int)

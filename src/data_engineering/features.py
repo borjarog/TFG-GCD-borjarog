@@ -1,10 +1,4 @@
-"""
-Feature engineering EPA: variables demográficas y datasets de modelado para
-Fase 1 (macro: Ocupado/Parado/Inactivo) y Fase 2 (micro: subempleo).
-
-Uso:
-    python -m src.data_engineering.features
-"""
+"""Datasets Fase 1 (macro) y Fase 2 (subempleo) a partir del parquet intermedio."""
 
 from __future__ import annotations
 
@@ -209,18 +203,11 @@ COLUMNAS_FASE1 = [
 
 
 def procesar_fase1_macro(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Dataset Fase 1: Ocupado / Parado / Inactivo, a partir de AOI.
+    """Ocupado / Parado / Inactivo a partir de AOI, solo demografía, 16-64.
 
-    Los predictores son puramente demográficos (disponibles para cualquier
-    persona de 16+, sin depender de si tiene o busca empleo) para evitar fuga
-    de información hacia el target: se excluyen a propósito variables como
-    OCUP1, ACT1, SITU, DUCON1, PARCO1, horas trabajadas, BUSCA, MASHOR..., que
-    solo existen para quien ya tiene o busca empleo.
-
-    El dataset de modelado se restringe a edad activa 16-64 (códigos EDAD1
-    salvo 65). Así se evita que el modelo se reduzca a detectar jubilación.
-    El DataFrame completo 16+ se sigue devolviendo para alimentar Fase 2
-    (ocupados de 65+ también pueden estar en subempleo).
+    Nada de ocupación, horas ni búsqueda de empleo: si las meto, el modelo
+    copia el propio estado laboral. Los 65+ se quitan para que no sea un
+    detector de jubilados; el dataframe 16+ se deja para Fase 2.
     """
     print("Procesando Fase 1 (Mercado Macro)...")
 
@@ -279,14 +266,10 @@ COLUMNAS_FASE2 = [
 
 
 def procesar_fase2_micro(df_adultos: pd.DataFrame) -> pd.DataFrame:
-    """Dataset Fase 2: subempleo por insuficiencia de horas, solo para Ocupados.
+    """Subempleo (AOI=03) solo en ocupados.
 
-    TARGET_SUBEMPLEO se toma directamente del código oficial AOI=03
-    ("Ocupados subempleados por insuficiencia de horas", la misma definición
-    OIT que ya aplica el INE), en vez de reconstruirlo a mano con
-    MASHOR+DISMAS. Por eso MASHOR, DISMAS, RZNDISH y HORDES (y BUSOTR, por ser
-    un síntoma casi equivalente) no se usan como predictores: son la fuente
-    directa de esa clasificación y causarían fuga de información.
+    El target es el código del INE, no lo montó yo con MASHOR/DISMAS.
+    Esas variables (y HORDES, BUSOTR) no entran: son casi la definición.
     """
     print("Procesando Fase 2 (Subempleo Micro)...")
 
@@ -321,9 +304,7 @@ def procesar_fase2_micro(df_adultos: pd.DataFrame) -> pd.DataFrame:
     df_ocupados["TIPO_ADMINISTRACION"] = mapear_variable(
         df_ocupados["SP"], "SP", default=pd.NA
     ).fillna("No_aplica")
-    # DUCON2/DUCON3 son mutuamente excluyentes por diseño (indefinido vs.
-    # temporal), igual que PRONA1/REGNA1 en Fase 1: el NaN complementario es
-    # esperado, no un problema de calidad.
+    # DUCON2 y DUCON3 no se solapan (indefinido vs temporal); el NaN del otro es normal.
     df_ocupados["CONTRATO_PERMANENTE_DISCONTINUO"] = mapear_variable(
         df_ocupados["DUCON2"], "DUCON2", default=pd.NA
     )
@@ -356,7 +337,7 @@ def ejecutar_pipeline(
     output_fase1=DATASET_FASE1,
     output_fase2=DATASET_FASE2,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Transforma el parquet intermedio en los datasets listos para Machine Learning."""
+    """Pasa el parquet intermedio a los datasets de modelado."""
     print(f"Cargando datos intermedios de {input_file}...")
 
     import pyarrow.parquet as pq  # type: ignore

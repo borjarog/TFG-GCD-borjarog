@@ -1,17 +1,8 @@
-"""Modelado de Fase 2: subempleo por insuficiencia de horas (ocupados).
+"""Fase 2: subempleo (AOI=03) en ocupados.
 
-Target binario TARGET_SUBEMPLEO = 1 si AOI=03 (definición OIT/INE).
-Se comparan Regresión Logística, Random Forest y LightGBM con búsqueda
-de hiperparámetros (PR-AUC), evaluación en test temporal e interpretabilidad
-SHAP (beeswarm + barras de importancia media |SHAP|).
-
-Variables EXCLUIDAS por fuga (definición del target): MASHOR, DISMAS,
-RZNDISH, HORDES, BUSOTR. Las horas habituales/efectivas SÍ se usan como
-factores de riesgo laborales (no son la fuente directa de AOI=03).
-
-Uso:
-    python -m src.modeling.fase2
-    python run_model_fase2.py
+Logística, RF y LightGBM; ganador por PR-AUC. Fuera MASHOR, DISMAS, RZNDISH,
+HORDES y BUSOTR (van pegados a la definición del target). Las horas del puesto
+sí entran, que no son el código AOI.
 """
 
 from __future__ import annotations

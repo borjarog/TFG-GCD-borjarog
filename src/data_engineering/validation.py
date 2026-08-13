@@ -1,9 +1,4 @@
-"""
-Validación (sanity checks) del dataset intermedio EPA.
-
-Uso:
-    python -m src.data_engineering.validation
-"""
+"""Checks del parquet intermedio (EPA 2021+)."""
 
 from __future__ import annotations
 
@@ -17,7 +12,7 @@ from .diccionario_datos import codigo_en, mapear_variable
 
 
 def _configurar_stdout_utf8() -> None:
-    """En consola Windows fuerza UTF-8; en Jupyter/OutStream no tocar stdout."""
+    """UTF-8 en consola Windows; en Jupyter no se toca stdout."""
     if sys.platform != "win32":
         return
     buffer = getattr(sys.stdout, "buffer", None)
@@ -32,7 +27,7 @@ def _configurar_stdout_utf8() -> None:
 _configurar_stdout_utf8()
 
 def cargar_datos(archivo=INTERIM_EPA) -> pd.DataFrame | None:
-    """Carga el dataset intermedio consolidado (bloque EPA 2021+)."""
+    """Carga el parquet intermedio."""
     if not archivo.exists():
         print(f"Error: no se encuentra el archivo {archivo}")
         return None
@@ -52,7 +47,7 @@ def _check_estructura(df: pd.DataFrame) -> None:
 def _check_poblacion(df: pd.DataFrame) -> None:
     print("\n[2. POBLACIÓN ESTIMADA (FACTOREL)]")
     if "FACTOREL" not in df.columns:
-        print(" -> ⚠️ No se encontró la columna FACTOREL.")
+        print(" -> No se encontró la columna FACTOREL.")
         return
 
     factor = pd.to_numeric(df["FACTOREL"], errors="coerce")
@@ -69,15 +64,15 @@ def _check_poblacion(df: pd.DataFrame) -> None:
 
     print(f"Población media estimada por trimestre: {poblacion_media:,.0f} personas")
     if 35_000_000 < poblacion_media < 52_000_000:
-        print(" -> ✔️ LÓGICO: la población cuadra con la escala esperada (~40-48M).")
+        print(" -> OK: la poblacion cuadra con la escala esperada (~40-48M).")
     else:
-        print(" -> ⚠️ AVISO: el cálculo de población no cuadra. Revisar FACTOREL.")
+        print(" -> AVISO: el cálculo de población no cuadra. Revisar FACTOREL.")
 
 
 def _check_sexo(df: pd.DataFrame) -> None:
     print("\n[3. DISTRIBUCIÓN POR SEXO]")
     if "SEXO1" not in df.columns:
-        print(" -> ⚠️ No se encontró la columna SEXO1.")
+        print(" -> No se encontró la columna SEXO1.")
         return
 
     etiquetas = mapear_variable(df["SEXO1"], "SEXO1")
@@ -86,17 +81,17 @@ def _check_sexo(df: pd.DataFrame) -> None:
 
     porcentaje_mujeres = distribucion.get("Mujer", 0.0)
     if 49.0 < porcentaje_mujeres < 53.0:
-        print(" -> ✔️ LÓGICO: hay paridad biológica (~51% mujeres).")
+        print(" -> OK: la proporcion de mujeres esta en torno al 51%.")
     else:
         print(
-            f" -> ⚠️ AVISO: porcentaje de mujeres detectado: {porcentaje_mujeres:.1f}%. Revisar."
+            f" -> AVISO: porcentaje de mujeres detectado: {porcentaje_mujeres:.1f}%. Revisar."
         )
 
 
 def _check_actividad(df: pd.DataFrame) -> None:
     print("\n[4. MERCADO LABORAL (AOI)]")
     if "AOI" not in df.columns:
-        print(" -> ⚠️ No se encontró la columna AOI.")
+        print(" -> No se encontró la columna AOI.")
         return
 
     etiquetas = mapear_variable(df["AOI"], "AOI", default="Desconocido")
@@ -113,11 +108,11 @@ def _check_actividad(df: pd.DataFrame) -> None:
         )
         if pct_menores > 99.0:
             print(
-                "   -> ✔️ CONFIRMADO: los nulos en AOI corresponden a menores de 16 años."
+                "   -> OK: los nulos en AOI corresponden a menores de 16 anos."
             )
         else:
             print(
-                "   -> ⚠️ AVISO: hay nulos en AOI que no corresponden a menores de 16 años."
+                "   -> AVISO: hay nulos en AOI que no corresponden a menores de 16 años."
             )
 
     ocupados = codigo_en(df["AOI"], {"03", "04"}).mean() * 100
@@ -125,9 +120,9 @@ def _check_actividad(df: pd.DataFrame) -> None:
         f"\nProporción de ocupados (sobre el total, incl. menores de 16): {ocupados:.1f}%"
     )
     if ocupados > 40.0:
-        print(" -> ✔️ LÓGICO: la proporción de ocupados tiene sentido estructural.")
+        print(" -> OK: la proporcion de ocupados tiene sentido.")
     else:
-        print(" -> ⚠️ AVISO: proporción inusual de ocupados.")
+        print(" -> AVISO: proporción inusual de ocupados.")
 
 
 def _check_nulos(df: pd.DataFrame) -> None:
@@ -137,7 +132,7 @@ def _check_nulos(df: pd.DataFrame) -> None:
             pct_nulos = df[col].isna().mean() * 100
             print(f"{col}: {pct_nulos:.2f}% valores nulos")
             if pct_nulos > 5:
-                print(f" -> ⚠️ AVISO: demasiados nulos en {col}.")
+                print(f" -> AVISO: demasiados nulos en {col}.")
 
 
 def realizar_sanity_check(df: pd.DataFrame) -> None:
